@@ -48,8 +48,11 @@ app.post("/register/", async (request, response) => {
       response.send("User created successfully");
     } else {
       response.status(400);
-      response.send("User already exists");
+      response.send("Password is too short");
     }
+  } else {
+    response.status(400);
+    response.send("User already exists");
   }
 });
 
@@ -60,7 +63,7 @@ app.post("/login/", async (request, response) => {
     `Select * from user where username="${username}";`
   );
   if (dbUser !== undefined) {
-    const isPasswordMatch = await bcrypt.compare(password, dbUser, password);
+    const isPasswordMatch = await bcrypt.compare(password, dbUser.password);
     if (isPasswordMatch) {
       let jwtToken = jwt.sign(username, "MY_SECRET_KEY");
       response.send({ jwtToken });
